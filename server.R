@@ -9,7 +9,7 @@ library(shiny)
 library(datasets)
 
 carData <- mtcars
-carData$am <- factor(carData$am)
+carData$am <- factor(carData$am, labels=c("Automatic", "Manual"))
 dependentVariable = colnames(carData)[1]
 defaultVariable <- colnames(carData)[2]
 

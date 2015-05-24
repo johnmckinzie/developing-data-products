@@ -15,13 +15,17 @@ shinyUI(fluidPage(
   # Sidebar with a slider input for number of bins
   sidebarLayout(
     sidebarPanel(
-      uiOutput("independentSelect"),
-      verbatimTextOutput("independent")
+      uiOutput("independentSelect")
     ),
 
     # Show a plot of the generated distribution
     mainPanel(
-      plotOutput("fitPlot")
+      p(strong("The data used for this application was extracted from the 1974 Motor Trend US magazine, and comprises 
+      fuel consumption and 10 aspects of automobile design and performance for 32 automobiles (1973--74 models). Select
+      a variable below to view a plot and linear regression line of mpg vs the selected variable.")),
+      h2(textOutput("formula")),
+      plotOutput("plot"),
+      verbatimTextOutput("model")
     )
   )
 ))

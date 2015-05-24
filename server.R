@@ -6,22 +6,42 @@
 #
 
 library(shiny)
+library(datasets)
+
+carData <- mtcars
+carData$am <- factor(carData$am)
+dependentVariable = colnames(carData)[1]
+defaultVariable <- colnames(carData)[2]
 
 shinyServer(function(input, output) {
-  data("mtcars")
-  
   output$independentSelect <- renderUI({
-    selectInput("independent", "Independent Variable", colnames(mtcars)[-1]) 
+    selectInput("variable", "Independent Variable", as.list(colnames(carData)[-1]), defaultVariable)
   })
   
-  output$independent <- renderPrint({input$independent})
-
-  output$fitPlot <- renderPlot({
-    frm <- as.formula(paste("`mpg`", input$independent,  sep=" ~ "))
-    fit <- lm(frm, data=mtcars)
-    plotTitle <- paste("mpg vs ", input$independent)
-    plot(mtcars[[input$independent]], mtcars$mpg, xlab=input$independent, ylab="mpg", main=plotTitle)
-    abline(fit)
+  myFormula <- reactive({
+    if (is.null(input$variable)) {
+      paste(dependentVariable, '~', defaultVariable)
+    } else {
+      paste(dependentVariable, '~', input$variable)
+      
+    }
+  })
+  
+  output$formula <- renderText({
+    myFormula()
+  })
+  
+  myModel <- reactive({
+    lm(myFormula(), data=carData)
   })
 
+  output$model <- renderPrint({
+    myModel()
+  })
+  
+  output$plot <- renderPlot({
+    plotTitle <- paste("mpg vs ", input$variable)
+    plot(carData[[input$variable]], carData$mpg, xlab=input$variable, ylab="mpg", main=plotTitle)
+    abline(myModel())
+  })
 })
